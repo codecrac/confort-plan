@@ -35,7 +35,7 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
   Items item_attente = new Items(
-    title: "Livraisons non debutées",
+    title: "Productions disponibles en plantation",
     valeur: "0",
     img: "assets/icones_operation/en_attente.png",
     route: OperationsView('en_attente','Livraisons non debutées'),
@@ -88,17 +88,17 @@ class _DashboardViewState extends State<DashboardView> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: EdgeInsets.all(25),
+                         Padding(
+                        padding: EdgeInsets.fromLTRB(5, 5, 5, 0),
                         child:Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children:[
-                            Image.asset("assets/images/logo.png", height: 60,),
+                            Image.asset("assets/images/logo.png", height: 30,),
                           ],
                         ) ,
                       ),
                       SizedBox(
-                      height: 30,
+                      height: 10,
                     ),
                       Center(
                         child: InkWell(
@@ -139,9 +139,9 @@ class _DashboardViewState extends State<DashboardView> {
                       ),
                       Expanded(
                         child: GridView.count(
-                            childAspectRatio: 1.0,
+                            childAspectRatio: 1.5,
                             padding: EdgeInsets.only(left: 16, right: 16),
-                            crossAxisCount: 3,
+                            crossAxisCount: 2,
                             crossAxisSpacing: 18,
                             mainAxisSpacing: 18,
                             children: myList.map((data) {

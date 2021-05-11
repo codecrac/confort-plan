@@ -296,9 +296,14 @@ class _OperationsViewState extends State<OperationsView> {
                                 )
                             ),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(" Cash : $cash",style: TextStyle(fontSize: 12),),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
                                 FlatButton(
                                   onPressed: (){},
                                   color: item_operation['statut']=="paiement_effectuer" ? succesGreen : gris,

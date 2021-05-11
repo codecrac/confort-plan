@@ -32,91 +32,99 @@ class LoginViewState extends State<LoginView> {
       home:Scaffold(
         appBar: null,
         body: Builder(
-          builder: (context) => Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text("CONFORT PLAN",
-                      style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: vertForet),
+          builder: (context) =>
+              Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children :[
+                SingleChildScrollView(
+                  child:Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: Text("CONFORT PLAN",
+                    style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: vertForet),
+                  ),
                 ),
-            ),
-          // inputIdentifiant,
-          chargement_en_cours(),
-          Padding(
-              padding: EdgeInsets.all(5),
-              child: TextField(
-                controller: IdentifiantController,
-                cursorColor: vertForet,
-                decoration: InputDecoration(
-                    // enabledBorder: OutlineInputBorder(
-                    //   borderSide: BorderSide(
-                    //       color: Colors.red, width: 5.0),
-                    // ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: vertForet,width: 1.5),
+                // inputIdentifiant,
+                chargement_en_cours(),
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: TextField(
+                    controller: IdentifiantController,
+                    cursorColor: vertForet,
+                    decoration: InputDecoration(
+                      // enabledBorder: OutlineInputBorder(
+                      //   borderSide: BorderSide(
+                      //       color: Colors.red, width: 5.0),
+                      // ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: vertForet,width: 1.5),
+                        ),
+                        hintText: 'Identifiant',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+                        border: OutlineInputBorder(
+                            borderSide: BorderSide(color: vertForet),
+                            borderRadius: BorderRadius.circular(10.0)
+                        )
                     ),
-                    hintText: 'Identifiant',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                    border: OutlineInputBorder(
-                        borderSide: BorderSide(color: vertForet),
-                        borderRadius: BorderRadius.circular(10.0)
-                    )
+                  ),
                 ),
-              ),
-            ),
-          // inputPassword,
-          Padding(
-                padding: EdgeInsets.all(5),
-                child: TextField(
-                controller: passwordController,
-                keyboardType: TextInputType.text,
-                obscureText: true,
-                cursorColor: vertForet,
-                decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                          color: vertForet,width: 1.5),
+                // inputPassword,
+                Padding(
+                  padding: EdgeInsets.all(5),
+                  child: TextField(
+                    controller: passwordController,
+                    keyboardType: TextInputType.text,
+                    obscureText: true,
+                    cursorColor: vertForet,
+                    decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: vertForet,width: 1.5),
+                        ),
+                        hintText: 'Mot de passe',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0)
+                        )
                     ),
-                    hintText: 'Mot de passe',
-                    contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0)
-                    )
+                  ),
                 ),
-              ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 5),
+                  child: ButtonTheme(
+                    minWidth: 150,
+                    height: 56,
+                    child: RaisedButton(
+                      child: Text(" S'Identifier ", style: TextStyle(color: Colors.white, fontSize: 20)),
+                      color: vertForet,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)
+                      ),
+                      onPressed:(){
+                        test_http(context);
+                      },
+                    ),
+                  ),
+                ),
+                buttonDecouvrir(context),
+                Container(
+                  padding: EdgeInsets.fromLTRB(0, 5, 15, 5),
+                  alignment: Alignment.centerRight,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push( context, MaterialPageRoute(builder: (context) => Register()),);
+                    },
+                    child: new Text("Pas encore menbre ? Je m'inscris"),
+                  ),
+                ),
+              ],
             ),
-      Padding(
-        padding: EdgeInsets.only(bottom: 5),
-        child: ButtonTheme(
-          minWidth: 150,
-          height: 56,
-          child: RaisedButton(
-            child: Text(" S'Identifier ", style: TextStyle(color: Colors.white, fontSize: 20)),
-            color: vertForet,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)
-            ),
-            onPressed:(){
-              test_http(context);
-            },
+                )
+              ],
           ),
-        ),
-      ),
-      buttonDecouvrir(context),
-            Container(
-          padding: EdgeInsets.fromLTRB(0, 5, 15, 5),
-          alignment: Alignment.centerRight,
-          child: GestureDetector(
-            onTap: () {
-              Navigator.push( context, MaterialPageRoute(builder: (context) => Register()),);
-            },
-            child: new Text("Pas encore menbre ? Je m'inscris"),
-          ),
-        ),
-          ],
-        ),
       ),
     ),
     );
