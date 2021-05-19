@@ -271,9 +271,9 @@ class _OperationsViewState extends State<OperationsView> {
                                     Text("Desc : ${item_operation['description']} \n"),
                                     Text("Statut : $front_statut \n", style: TextStyle(fontWeight: FontWeight.bold),),
                                     SingleChildScrollView(
-                                      child: RichText(
+                                      child: statut_operation!='en_attente' ? RichText(
                                         textAlign: TextAlign.justify,
-                                        text: statut_operation!='en_attente' ?
+                                        text:
                                           TextSpan( text:"Commentaire : ${item_operation['commentaire']}",style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 14,
@@ -281,17 +281,9 @@ class _OperationsViewState extends State<OperationsView> {
                                                   wordSpacing: 1,
                                                 ),
                                               )
-                                          :TextSpan( text:"Commentaire : Contactez l'un des numeros suivants ( +225 25 22 00 81 02 / +225 01 40 15 15 90 ) pour signaler le depart de vos camions",
-                                                    style: TextStyle(
-                                                      fontWeight: FontWeight.w400,
-                                                      fontSize: 14,
-                                                      color: Colors.black,
-                                                      wordSpacing: 1,
-                                                    ),
-
-                                        ),
+                                        )
+                                        :set_date(context,item_operation)
                                       ),
-                                    ),
                                   ],
                                 )
                             ),
@@ -324,25 +316,55 @@ class _OperationsViewState extends State<OperationsView> {
         });
   }
 
-  set_date(){
+
+  //-=---=================-------==##=======================
+  set_date(context,item_operation){
     return Container(
-      child: TextField(
-        // controller: passwordController,
-        keyboardType: TextInputType.datetime,
-        obscureText: true,
-        cursorColor: vertForet,
-        decoration: InputDecoration(
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  color: vertForet,width: 1.5),
-            ),
-            hintText: 'Mot de passe',
-            contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 5),
-            border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10.0)
-            )
-        ),
-      ),
+      child: Column(
+        children: [
+
+          Row(
+              children: [
+                  Text("Date de depart : "),
+                  Text( "$selectedDate"),
+              ]
+          ),
+          Row(
+              children: [ Text("Heure de depart : ${selectedTime.toString().replaceAll("TimeOfDay(", "").replaceAll(")", "")}") ]
+          ),
+          Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                  RaisedButton(
+                    onPressed: () => _selectDate(context),
+                    child: Text('Changer la date '),
+                  ),
+                  RaisedButton(
+                    onPressed: () => _selectTime(context),
+                    child: Text('Changer l\'heure'),
+                  ),
+              ]
+          ),
+
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(height: 20.0,),
+              RaisedButton(
+                color: vertForet,
+                onPressed: (){
+                  changer_etat_operation(context,
+                      item_operation['id'],
+                      selectedDate,
+                      selectedTime.toString().replaceAll("TimeOfDay(", "").replaceAll(")", ""),
+                      "livraison_en_cours");
+                  },
+                child : Text("Enregistrer le depart du camion",style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: blanc))
+              ),
+            ]
+          ),
+        ]
+    )
     );
   }
 
@@ -395,7 +417,88 @@ class _OperationsViewState extends State<OperationsView> {
     }
   }
 
+  var selectedDate = "${DateTime.now()}".split(' ')[0].split('-')[2] + "-" +
+                      "${DateTime.now()}".split(' ')[0].split('-')[1] + "-" +
+                      "${DateTime.now()}".split(' ')[0].split('-')[0];
+  var selectedDate2 = DateTime.now();
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate2,
+        firstDate: DateTime(2015, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate2){
+      //formater la date
+      var la_date = "${picked.toLocal().toString().split(' ')[0].split('-')[2]} "+
+                  "-${picked.toLocal().toString().split(' ')[0].split('-')[1]}"+
+                  "-${picked.toLocal().toString().split(' ')[0].split('-')[0]}";
+      setState(() {
+        selectedDate = la_date;
+        selectedDate2 = picked;
+      });
+    }
 
+  }
+
+  TimeOfDay selectedTime = TimeOfDay.now();
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay picked_s = await showTimePicker(
+        context: context,
+        initialTime: selectedTime, builder: (BuildContext context, Widget child) {
+      return MediaQuery(
+        data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+        child: child,
+      );});
+
+    if (picked_s != null && picked_s != selectedTime )
+      setState(() {
+        selectedTime = picked_s;
+      });
+  }
+
+
+//  =============================================================
+  void changer_etat_operation(context,id_operation,date,heure,statut) async {
+    print(" changer letat d'une operation ");
+
+    // setState(() { chargement_en_cours = true; });
+
+      // try{
+        var queryParameter = {
+          'action': 'changer_etat',
+          'id_operation': "$id_operation",
+          'temps_depart': "$date à $heure",
+          'statut': "$statut",
+        };
+
+        var url = Uri.https("$adresse","$complement",queryParameter);
+        print("************(###*&#(-------$url");
+        var response = await http.get(url);
+
+        if (response.statusCode == 200) {
+          print("reponse : " + response.body);
+          var jsonResponse = jsonDecode(response.body);
+          // print(jsonResponse['notif']);
+          print(" ##===========updater=========### ");
+          _showToast(context,"${jsonResponse['notif']}");
+          Navigator.pop(context);
+          recuperer_liste_operations(id_producteur);
+        }
+        else {
+          print('Echec de la requete code: ${response.statusCode}.');
+          _showToast(context,"Echec de connexion... verifier votre connection et reesayer");
+        }
+     /* }catch(e){
+        print('Echec de la requete code: $e.');
+        _showToast(context,"err -- Echec de connexion... verifier votre connection et reesayer");
+      }*/
+
+
+      // setState(() {chargement_en_cours = false;});
+
+
+
+  }
 
 }
 
