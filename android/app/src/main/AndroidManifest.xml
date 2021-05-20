@@ -2,8 +2,8 @@
     package="com.ajyl.kpn_confort_plan">
     <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="Kpn confort plan"
-        android:icon="@mipmap/logo">
+        android:label="KPN PALM"
+        android:icon="@mipmap/logo_palm">
        <activity
            android:name=".MainActivity"
             android:launchMode="singleTop"
