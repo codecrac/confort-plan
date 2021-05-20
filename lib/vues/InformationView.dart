@@ -298,6 +298,7 @@ class _InformationViewState extends State<InformationView> {
     return Expanded(child: ListView.builder(
         itemCount: liste_informations.length,
         itemBuilder: (context,index){
+          var nb_info_non_lu = info_non_lu;
           var item_information = liste_informations[index];
           var date_formater = item_information['timestamp'].toString();
           return Card(
@@ -306,7 +307,13 @@ class _InformationViewState extends State<InformationView> {
               child: Padding(
                 padding: EdgeInsets.all(5),
                 child:ListTile(
-                    title: Text(item_information['titre']),
+                    title: Row(
+                      children: [
+                        index<nb_info_non_lu ? bouttonDorer('',taille: 5.0) : Text(""),
+                        SizedBox(width: 8,),
+                        Text(item_information['titre']),
+                      ],
+                    ),
                     trailing: Container(
                       child:  FlatButton(
                         onPressed: (){},

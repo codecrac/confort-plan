@@ -95,10 +95,10 @@ BarreDeMenu(context){
   );
 }
 
-Widget bouttonDorer(nb) {
+Widget bouttonDorer(nb,{taille:15.0}) {
   return Container(
-      height: 15,
-      width: 15,
+      height: taille,
+      width: taille,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           color: dorer
