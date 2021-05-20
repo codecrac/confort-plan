@@ -37,8 +37,24 @@ BarreDeMenu(context){
               ],
             )
           ),*/
+
+      //dashboard
+      Padding(
+          padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+          child: Stack(
+            alignment: Alignment.bottomRight,
+            children: [
+              IconButton(
+                icon: Icon(Icons.home,size: 25 ),
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DashboardView()),);
+                },
+              ),
+            ],
+          )
+      ),
       //information
-          /*Padding(
+          Padding(
             padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
             child: Stack(
               alignment: Alignment.bottomRight,
@@ -52,26 +68,10 @@ BarreDeMenu(context){
                 info_non_lu>0 ? bouttonDorer(info_non_lu) : Text(""),
               ],
             )
-          ),*/
-      //dashboard
-          Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-            child: Stack(
-              alignment: Alignment.bottomRight,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.home,size: 25 ),
-                  onPressed: () {
-                    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => DashboardView()),);
-                  },
-                ),
-                info_non_lu>0 ? bouttonDorer(info_non_lu) : Text(""),
-              ],
-            )
           ),
 
       //deconnexion
-          Padding(
+          /*Padding(
           padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
           child: Stack(
             alignment: Alignment.bottomCenter,
@@ -84,7 +84,7 @@ BarreDeMenu(context){
               ),
             ],
           )
-      ),
+      ),*/
     //   RaisedButton(
     //         onPressed: (){
     //           recupererLeNombreDeNotifications();
@@ -103,7 +103,7 @@ Widget bouttonDorer(nb) {
           borderRadius: BorderRadius.circular(10),
           color: dorer
       ),
-    child: Text("$nb",textAlign: TextAlign.center,),
+    child: Center( child: Text("$nb",textAlign: TextAlign.center,style: TextStyle(fontSize: 12),),),
   );
 }
 

@@ -37,6 +37,7 @@ class _OperationsViewState extends State<OperationsView> {
   String email_producteur="votre_adresse@email";
   String nom_complet_producteur="Votre Nom";
   bool chargement_en_cours = true;
+  bool griser_bottom_modal = false;
   @override
   initState(){
     super.initState();
@@ -151,7 +152,7 @@ class _OperationsViewState extends State<OperationsView> {
                   // Text("selectable field"),
                 ],
               ),
-              choose_interface()
+              choose_interface(context)
             ],
           ),
         ),
@@ -178,7 +179,7 @@ class _OperationsViewState extends State<OperationsView> {
           return new Container(
             // height: 800,
             color: Colors.transparent,
-            child:  new Container(
+            child:  Container(
               decoration: new BoxDecoration(
                 color: Colors.white,
                 borderRadius: new BorderRadius.only(
@@ -194,7 +195,7 @@ class _OperationsViewState extends State<OperationsView> {
                 ],
               ),
               alignment: Alignment.topLeft,
-              child: Column(
+              child: griser_bottom_modal ? Center(child:Text("Operation en cours...",style: TextStyle(fontSize: 18),),) : Column(
                 children: <Widget>[
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -269,12 +270,12 @@ class _OperationsViewState extends State<OperationsView> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text("Desc : ${item_operation['description']} \n"),
+                                    item_operation['statut'] !='en_attente' ? Text("Depart : ${item_operation['temps_depart']} \n") : SizedBox(height: 0,),
                                     Text("Statut : $front_statut \n", style: TextStyle(fontWeight: FontWeight.bold),),
                                     SingleChildScrollView(
                                       child: statut_operation!='en_attente' ? RichText(
                                         textAlign: TextAlign.justify,
-                                        text:
-                                          TextSpan( text:"Commentaire : ${item_operation['commentaire']}",style: TextStyle(
+                                        text: TextSpan( text:"Commentaire : ${item_operation['commentaire']}",style: TextStyle(
                                                   fontWeight: FontWeight.w400,
                                                   fontSize: 14,
                                                   color: Colors.black,
@@ -358,6 +359,7 @@ class _OperationsViewState extends State<OperationsView> {
                       selectedDate,
                       selectedTime.toString().replaceAll("TimeOfDay(", "").replaceAll(")", ""),
                       "livraison_en_cours");
+
                   },
                 child : Text("Enregistrer le depart du camion",style:TextStyle(fontSize: 16,fontWeight: FontWeight.bold,color: blanc))
               ),
@@ -377,7 +379,9 @@ class _OperationsViewState extends State<OperationsView> {
     );
   }
 
-  liste_des_operation(){
+
+
+  liste_des_operation(context){
     return Expanded(child: ListView.builder(
         itemCount: liste_operations.length,
         itemBuilder: (context,index){
@@ -409,11 +413,11 @@ class _OperationsViewState extends State<OperationsView> {
     ));
   }
 
-  Widget choose_interface(){
+  Widget choose_interface(context){
     if(chargement_en_cours){
       return ChargementView();
     }else{
-      return liste_des_operation();
+      return liste_des_operation(context);
     }
   }
 
@@ -461,9 +465,8 @@ class _OperationsViewState extends State<OperationsView> {
   void changer_etat_operation(context,id_operation,date,heure,statut) async {
     print(" changer letat d'une operation ");
 
-    // setState(() { chargement_en_cours = true; });
-
-      // try{
+    setState(() { griser_bottom_modal = true; });
+      try{
         var queryParameter = {
           'action': 'changer_etat',
           'id_operation': "$id_operation",
@@ -480,25 +483,45 @@ class _OperationsViewState extends State<OperationsView> {
           var jsonResponse = jsonDecode(response.body);
           // print(jsonResponse['notif']);
           print(" ##===========updater=========### ");
-          _showToast(context,"${jsonResponse['notif']}");
+          // _showToast(context,"${jsonResponse['notif']}");
+          _afficher_modal(context,jsonResponse['notif']);
           Navigator.pop(context);
           recuperer_liste_operations(id_producteur);
         }
         else {
           print('Echec de la requete code: ${response.statusCode}.');
-          _showToast(context,"Echec de connexion... verifier votre connection et reesayer");
+          // _showToast(context,"Echec de connexion... verifier votre connection et reesayer");
+          _afficher_modal(context,"Echec de connexion... verifier votre connection et reesayer");
         }
-     /* }catch(e){
+      }catch(e){
         print('Echec de la requete code: $e.');
-        _showToast(context,"err -- Echec de connexion... verifier votre connection et reesayer");
-      }*/
-
-
-      // setState(() {chargement_en_cours = false;});
-
-
+        // _showToast(context,"err -- Echec de connexion... verifier votre connection et reesayer");
+        _afficher_modal(context,"err -- Echec de connexion... verifier votre connection et reesayer");
+      }
+      setState(() {griser_bottom_modal = false;});
 
   }
+
+  _afficher_modal(context,texte) {
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (context) {
+        return  AlertDialog(
+          title: Image.asset("assets/images/logo.png",height: 25,),
+          content: Text("$texte"),
+          actions: [
+            FlatButton(
+                child: Text("OK"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                }),
+          ],
+        );
+      },
+    );
+  }
+
 
 }
 

@@ -11,6 +11,8 @@ import 'package:kpn_confort_plan/vues/login.dart';
 import 'package:kpn_confort_plan/vues/new_operation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'InformationView.dart';
+
 class DashboardView extends StatefulWidget {
   @override
   _DashboardViewState createState() {
@@ -25,12 +27,14 @@ class _DashboardViewState extends State<DashboardView> {
   String nom_complet_producteur = "Votre Nom";
   bool cahrgement_en_cours = false;
   bool probleme_avec_la_requete = false;
+  int info_non_lu = 0;
 
   @override
   initState() {
     super.initState();
     this.recuperer_info_utilisateur().whenComplete(() async{
       this.recuperer_info_dashboard(context,id_producteur);
+      recupererLeNombreDeNotifications(id_producteur);
     });
   }
 
@@ -103,7 +107,7 @@ class _DashboardViewState extends State<DashboardView> {
                       Center(
                         child: InkWell(
                           onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>NewOperation()));
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>NewOperation()));
                           },
                           child: Container(
                             margin: EdgeInsets.all(10),
@@ -224,14 +228,34 @@ class _DashboardViewState extends State<DashboardView> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      InkWell(
-                                        child: Icon(
-                                          Icons.menu,
-                                          color: blanc,
-                                        ),
-                                        onTap: () {
-                                          Scaffold.of(context).openDrawer();
-                                        },
+                                      Row(
+                                        children: [
+                                          InkWell(
+                                            child: Icon(
+                                              Icons.menu,
+                                              color: blanc,
+                                            ),
+                                            onTap: () {
+                                              Scaffold.of(context).openDrawer();
+                                            },
+                                          ),
+                                          info_non_lu>0 ? Padding(
+                                              padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                                              child: Stack(
+                                                alignment: Alignment.bottomRight,
+                                                children: [
+                                                  IconButton(
+                                                    icon: Icon(Icons.notifications_active_outlined,size: 25 ),
+                                                    color: blanc,
+                                                    onPressed: () {
+                                                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => InformationView()),);
+                                                    },
+                                                  ),
+                                                  bouttonDorer(info_non_lu)
+                                                ],
+                                              )
+                                          ) : Text(""),
+                                        ],
                                       ),
                                       Text(
                                         "Bienvenue $nom_complet_producteur",
@@ -323,10 +347,42 @@ class _DashboardViewState extends State<DashboardView> {
   }
 
 
+  recupererLeNombreDeNotifications(id_producteur) async{
+    print("##get LeNombreDeNotifications --- id_prod == $id_producteur");
+    try{
+      var queryParameter = {
+        'action': 'get-notif-number',
+        'id_producteur': '$id_producteur',
+      };
 
+      var url = Uri.https("$adresse","$complement",queryParameter);
+
+      var response = await http.get(url);
+      Map dataComingFromTheServer = json.decode(response.body);
+
+      print("###----11-------- $dataComingFromTheServer");
+      print("###----data-------- ${dataComingFromTheServer['data']['op_non_lu']} operations -- ${dataComingFromTheServer['data']['info_non_lu']} informations-- ");
+
+      var nb_operation_non_lu = dataComingFromTheServer['data']['op_non_lu'];
+      var nb_informations_non_lu =dataComingFromTheServer['data']['info_non_lu'];
+
+      setState(() {
+        info_non_lu = nb_informations_non_lu;
+      });
+
+      await mettreAjourInfo(nb_informations_non_lu,nb_operation_non_lu);
+
+    }catch(e){
+      print("--------error----------------- $e --------------------");
+    }
+  }
+
+  mettreAjourInfo(nb_info,nb_operation) async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setInt(cle_info,nb_info);
+    sharedPreferences.setInt(cle_operation,nb_operation);
+  }
 }
-
-
 
 class Items {
   String title;
@@ -336,3 +392,4 @@ class Items {
 
   Items({this.title, this.valeur, this.img, this.route});
 }
+
