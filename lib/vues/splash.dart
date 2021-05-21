@@ -43,8 +43,8 @@ class _SplashViewState extends State<SplashView> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset("assets/images/logo.png",),
-                Text("CONFORT PLAN",
+              Image.asset("assets/images/logo_palm.png",height: 100,),
+                Text("KPN PALM",
                     style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: vertForet),
                   ),
             ],
